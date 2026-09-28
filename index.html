@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Locad — Archetype Playbooks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500..700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#0B0F0C; --surface:#121915; --ink:#F1F3EF; --muted:#93A79A; --line:#232B26;
+  --accent:#24D467; --accent-soft:#123321; --amber:#E3B45C; --amber-soft:#332711;
+  --red:#E38A76; --red-soft:#3A2019; --mono:"IBM Plex Mono",ui-monospace,monospace;
+  --display:"Fraunces","Iowan Old Style",Georgia,serif; --body:"Inter","Helvetica Neue",Arial,sans-serif;
+  color-scheme:dark;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="light"]{
+  --paper:#F5F7F5; --surface:#FFFFFF; --ink:#0C120E; --muted:#5B6B62; --line:#DCE3DE;
+  --accent:#159A52; --accent-soft:#E1F5E9; --amber:#B9812A; --amber-soft:#F3E6CC;
+  --red:#A6402F; --red-soft:#F4DFD8; color-scheme:light;
+}
+*,*::before,*::after{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:15.5px;line-height:1.5}
+h1,h2,h3,h4{font-family:var(--display);font-weight:600;line-height:1.08;margin:0;text-wrap:balance}
+p{margin:0 0 12px}
+.mono{font-family:var(--mono)}
+a{color:var(--accent)}
+button{font:inherit}
+::selection{background:var(--accent-soft)}
+
+/* shell */
+.shell{display:flex;min-height:100%}
+.side{width:300px;flex:0 0 300px;border-right:1px solid var(--line);padding:22px 16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:env(safe-area-inset-top,0px);align-self:flex-start;height:100vh;overflow:auto}
+.brand{padding:2px 6px 10px}
+.locad-wordmark{display:flex;align-items:center;gap:7px;font-family:var(--body);font-weight:700;font-size:14px;letter-spacing:.14em;color:var(--ink);margin-bottom:14px}
+.locad-wordmark .dot{width:9px;height:9px;border-radius:3px;background:var(--accent);flex:0 0 auto}
+.brand .kicker{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.brand h1{font-size:23px}
+.brand .sub{font-size:13px;color:var(--muted);margin-top:6px}
+
+.search{position:relative}
+.search input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--ink);font:inherit;font-size:14px}
+.search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.55;pointer-events:none}
+
+.count{font-size:12px;color:var(--muted);padding:0 6px}
+
+.list{display:flex;flex-direction:column;gap:4px;overflow:auto}
+.item{display:flex;align-items:center;gap:11px;text-align:left;border:1px solid transparent;background:none;color:var(--ink);border-radius:10px;padding:9px 11px;cursor:pointer}
+.item:hover{background:var(--accent-soft)}
+.item[aria-current="true"]{background:var(--surface);border-color:var(--line);box-shadow:0 1px 0 rgba(0,0,0,.02)}
+.item .ic{flex:0 0 30px;width:30px;height:30px;border-radius:8px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.item .ic svg{width:17px;height:17px}
+.item .txt{min-width:0;flex:1}
+.item .nm{font-weight:600;font-size:14px;display:block}
+.item .sample{font-size:12px;color:var(--muted);display:block}
+.item .mo{font-family:var(--mono);font-size:11px;color:var(--muted);flex:0 0 auto}
+
+/* main */
+main{flex:1;min-width:0;padding:0}
+.wrap{max-width:820px;margin:0 auto;padding:38px 32px 90px}
+.topline{display:flex;justify-content:flex-end;align-items:center;gap:12px;margin-bottom:14px}
+.theme-toggle{border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:12.5px;padding:6px 11px;border-radius:8px;cursor:pointer}
+
+.head{display:flex;flex-wrap:wrap;gap:20px;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.head .htitle{display:flex;gap:14px;align-items:flex-start}
+.head .hic{flex:0 0 46px;width:46px;height:46px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.head .hic svg{width:24px;height:24px}
+.head h2{font-size:clamp(26px,3.2vw,34px)}
+
+.stat{flex:0 0 auto;text-align:right;border:1px solid var(--line);background:var(--surface);border-radius:12px;padding:14px 18px;min-width:170px}
+.stat .v{font-family:var(--display);font-size:34px;font-weight:600;color:var(--accent);font-variant-numeric:tabular-nums}
+.stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+
+.formula{font-family:var(--mono);font-size:13.5px;color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:10px 14px;margin:18px 0 22px;overflow-x:auto;white-space:nowrap}
+
+.levers{display:flex;flex-wrap:wrap;gap:8px 18px;margin-bottom:26px}
+
+.glossary{border:1px dashed var(--line);border-radius:10px;padding:12px 16px;margin-bottom:26px;background:var(--paper)}
+.glossary summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--accent)}
+.glossary[open] summary{margin-bottom:10px}
+.glossary ul.plain{font-size:13.5px}
+.glossary ul.plain li{margin-bottom:8px}
+.lever{font-size:13px;color:var(--muted)}
+.lever b{color:var(--ink);font-weight:600}
+
+section.blk{margin-bottom:28px}
+section.blk h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-bottom:10px;font-family:var(--body)}
+.prose{max-width:66ch}
+
+.brandcard{border:1px solid var(--line);background:var(--surface);border-radius:14px;padding:20px 22px}
+.brandcard .bhead{display:flex;gap:14px;align-items:center;margin-bottom:12px}
+.brandcard .bic{flex:0 0 52px;width:52px;height:52px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center}
+.brandcard .bic svg{width:28px;height:28px}
+.brandcard .bname{font-size:19px;font-weight:600;font-family:var(--display)}
+.brandcard .bhq{font-size:12.5px;color:var(--muted);margin-top:2px}
+
+.lineup{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin:14px 0 4px}
+.sku{border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--paper)}
+.sku .sic{color:var(--accent);margin-bottom:6px}
+.sku .sic svg{width:20px;height:20px}
+.sku .sname{font-size:13px;font-weight:600;line-height:1.25}
+.sku .sprice{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin-top:3px}
+
+.imgnote{font-size:12px;color:var(--muted);border-top:1px dashed var(--line);margin-top:14px;padding-top:10px}
+
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px;min-width:560px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top;white-space:nowrap}
+th{font-weight:700;background:var(--paper);font-size:12px;text-transform:uppercase;letter-spacing:.03em;color:var(--muted)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--mono)}
+td.total{font-family:var(--mono);font-weight:700;color:var(--ink)}
+
+ul.plain{margin:0;padding-left:18px}
+ul.plain li{margin-bottom:7px;font-size:14.5px}
+
+.anglebox{position:relative;border-left:3px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:16px 18px;font-size:15px}
+.anglebox p{margin:0}
+.copybtn{position:absolute;top:10px;right:10px;border:1px solid var(--line);background:var(--surface);color:var(--muted);font-size:11.5px;padding:5px 9px;border-radius:7px;cursor:pointer}
+.copybtn.done{color:var(--accent);border-color:var(--accent)}
+
+footer.note{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:36px;padding-top:16px}
+
+@media (max-width:860px){
+  .shell{flex-direction:column}
+  .side{width:auto;flex:none;position:relative;height:auto;border-right:0;border-bottom:1px solid var(--line);top:auto}
+  .list{max-height:38vh}
+  .wrap{padding:26px 18px 70px}
+  .head{flex-direction:column}
+  .stat{text-align:left}
+}
+</style>
+</head>
+<body>
+<div class="shell">
+  <nav class="side" aria-label="Archetypes">
+    <div class="brand">
+      <div class="locad-wordmark"><span class="dot"></span>LOCAD</div>
+      <p class="kicker">BDM field guide</p>
+      <h1>Archetype Playbooks</h1>
+      <p class="sub">Eight brand patterns worth a Tijuana pitch, each with the duty math, a sample brand, and an opening line.</p>
+    </div>
+    <div class="search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input id="q" type="text" placeholder="Search brand, item, HTS...">
+    </div>
+    <p class="count" id="count"></p>
+    <div class="list" id="list" role="tablist"></div>
+  </nav>
+  <main>
+    <div class="wrap">
+      <div class="topline">
+        <button class="theme-toggle" id="themeBtn" type="button">Dark mode</button>
+      </div>
+      <div id="panel"></div>
+    </div>
+  </main>
+</div>
+<script>
+// Minimal line-icon set (24x24, stroke-based, currentColor) — original sketches, not brand marks.
+const ICONS = {
+ fan:'<circle cx="12" cy="12" r="1.6"/><path d="M12 10.4c-1-2-.6-4.8 1.4-6 2-1.2 3.6.4 3 2.2-.6 1.8-2.8 2.7-4.4 3.8Z"/><path d="M13.6 12c2 1 3.8 3.2 3.2 5.2-.6 2-3 1.6-3.8-.2-.8-1.8.1-3.6.6-5Z"/><path d="M10.4 12c-2-1-4.8-.6-6 1.4-1.2 2 .4 3.6 2.2 3-1.8-.6 2.7-2.8 3.8-4.4Z"/><path d="M4 20h9"/>',
+ suitcase:'<rect x="3.5" y="8" width="17" height="12" rx="2"/><path d="M9 8V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3.5 13h17"/><path d="M12 13v2"/>',
+ earbuds:'<path d="M7 11v4a3 3 0 0 0 3 3v0"/><rect x="5" y="8" width="4" height="6" rx="2"/><path d="M17 11v4a3 3 0 0 1-3 3v0"/><rect x="15" y="8" width="4" height="6" rx="2"/><path d="M9 5c1-1.3 5-1.3 6 0"/>',
+ chair:'<path d="M6 4v9"/><path d="M18 4v9"/><path d="M6 13h12v3a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4Z"/><path d="M6 8h12"/>',
+ led:'<path d="M4 16c4-6 12-6 16 0" stroke-dasharray="2.4 2.4"/><circle cx="4" cy="16" r="1.3" fill="currentColor" stroke="none"/><circle cx="9.3" cy="10.6" r="1.3" fill="currentColor" stroke="none"/><circle cx="14.7" cy="10.6" r="1.3" fill="currentColor" stroke="none"/><circle cx="20" cy="16" r="1.3" fill="currentColor" stroke="none"/>',
+ fountain:'<path d="M5 20h14"/><path d="M7 20V9a5 5 0 0 1 10 0"/><path d="M12 9V5"/><path d="M9 5.5c1-1 4-1 5 0"/>',
+ sneaker:'<path d="M3.5 17.5V13c2-1 3-2.4 4-4l2 2c1 1 2 1.4 3.4 1.4H17c2 0 3.5 1.4 3.5 3.4v1.7Z"/><path d="M3.5 17.5h17"/>',
+ weight:'<rect x="2.5" y="10" width="3" height="4" rx="1"/><rect x="18.5" y="10" width="3" height="4" rx="1"/><rect x="6" y="8.5" width="2.4" height="7" rx="1"/><rect x="15.6" y="8.5" width="2.4" height="7" rx="1"/><path d="M8.4 12h7.2"/>'
+};
+function icon(name){ return `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name]||ICONS.chair}</svg>`; }
+
+const ARCH = [
+ {id:"appl", name:"Home & kitchen appliances", icon:"fan",
+  sample:"Dreo", hq:"Clifton, NJ — self-described \"No.1 Tower Fan Brand\" in the US, and Amazon's top-selling household fan brand three years running (Circana data).",
+  sampleNote:"Fans, heaters, humidifiers, and air fryers. A China-founded brand with US operations; sells heavily on Amazon.",
+  lineup:[["Tower Fan 519","$99.99"],["Smart Tower Fan Pilot Max S","$129.99"],["Nomad One Tower Fan","$69.98"],["Smart Tower Fan 519S","$109.99"]],
+  why:"Small appliances like fans, heaters, and humidifiers are almost entirely made in China, so they carry the full China duty stack: the normal import tax on the category (a few percent), plus the 25% \"legacy Section 301\" tariff applied to most Chinese-made goods, plus a 12.5% forced-labor-related tariff on top. Stacked together, that lands around 40–42% duty — for every $100 the brand spends making a unit, it owes another $40+ to US Customs the moment the container clears, before a single one sells. These are also seasonal products: a heater brand has to build and ship its winter stock months before winter starts, and a fan brand does the same for summer. That means the brand is sitting on 4+ months of fully-duty-paid inventory waiting for the season to arrive, and margins on this category are thin — often single digits — so the cash tied up in prepaid duty is frequently larger than the brand's actual profit on the goods. Letting them defer that duty until a Tijuana-held unit is actually pulled for an order hands back real, immediate cash.",
+  levers:{Duty:"Very strong",Labor:"Medium (returns)",CrossBorder:"Low–medium"},
+  items:[["Tower fan","$60–100","8414.51","4.7%","25%","12.5%","—","~42%"],
+   ["Space heater","$50–90","8516.29","~3.7%","25%","12.5%","—","~41%"],
+   ["Humidifier","$40–70","8509.80","4.2%","25%","12.5%","—","~42%"],
+   ["Air fryer","$80–130","8516.60.40","4%","25%","12.5% on non-steel part","Steel content (derivative list)","~42%+"]],
+  math:[60,41,4,6],
+  mx:["Parcel-sized, which keeps this squarely in our current focus.","Pre-season stock can sit duty-deferred in Tijuana and pay duty only as it sells.","Amazon-heavy brands: pitch Tijuana as the reserve that replenishes FBA/AWD, not as the Prime ship-from point.","Returns (cosmetic damage, open box) can be regraded cheaply in Tijuana."],
+  lookalikes:"Dash (StoreBound), NutriBullet (LA), Our Place (LA). Chefman may be too large.",
+  angle:"Your fans and heaters sit for months before the season, and you paid about 40% duty on all of it the day it landed. We can hold that stock duty-deferred and release the cash."},
+ {id:"lug", name:"Luggage (non-leather)", icon:"suitcase",
+  sample:"Calpak", hq:"Los Angeles, CA — DTC luggage and travel-accessories brand sold direct and through retail partners.",
+  sampleNote:"Los Angeles-based luggage and travel accessories brand; DTC plus retail.",
+  lineup:[["Ambeur Carry-On","$245"],["Hue Carry-On","$215"],["Luka Soft-Sided Carry-On","$215"],["Ambeur Front Pocket Carry-On","$295"]],
+  why:"Luggage carries one of the highest duty stacks of any consumer product, and it starts before China even enters the picture: the standard US import tax on bags and suitcases (called the MFN rate) already runs 17.6–20%, far higher than most goods — a long-standing US tariff policy, not something new. Add the 25% \"legacy Section 301\" tariff and the 12.5% forced-labor-related tariff that apply to Chinese-made goods, and the total climbs to roughly 55–57.5%. In plain terms: well over half of what it costs to land a suitcase in the US is tax, not the physical product. Luggage brands also carry huge SKU counts — every size crossed with every color — and because ocean freight means ordering months of stock in one shipment, that inventory often sits 4+ months before it sells. So the brand is prepaying duty equal to more than half the product's cost, months ahead of any sale — deferring that in Tijuana frees an unusually large chunk of cash.",
+  levers:{Duty:"Very strong",Labor:"Low–medium",CrossBorder:"Medium (Canada)"},
+  items:[["Hard-shell carry-on","$150–250","4202.12 (plastic outer)","20%","25%","12.5%","—","~57.5%"],
+   ["Nylon duffel or backpack","$60–150","4202.92","17.6%","25%","12.5%","—","~55%"],
+   ["Packing cubes, toiletry bag","$20–60","4202.92","17.6%","25%","12.5%","—","~55%"]],
+  math:[35,56,4,8],
+  mx:["LA HQ is a short drive from our Tijuana site, so a site visit is easy.","Bulky but parcel-shippable; confirm carton cube for cross-border cost.","Leather and vegan-leather lines need an HTS check; exclude real leather."],
+  lookalikes:"Béis (LA), Monos (Vancouver, US+Canada), July. Away may be too large.",
+  angle:"On a $200 carry-on, duty alone is more than half your landed product cost. Deferring it on four months of stock frees a lot of cash."},
+ {id:"elec", name:"Consumer electronics & accessories", icon:"earbuds",
+  sample:"JLab", hq:"Carlsbad, CA — about 50 miles from Tijuana. Value-priced audio brand with a large, fast-refreshing catalog (30+ active earbud models).",
+  sampleNote:"Carlsbad, CA audio brand: earbuds, headphones, speakers at value price points. About 50 miles from Tijuana.",
+  lineup:[["Go Air Pop","$19.89"],["JBuds Air ANC","$39"],["Epic Air ANC","$42.99"],["JBuds Air Pro","$58"]],
+  why:"Audio electronics actually carry lower duty than most people assume for a Chinese-made product — around 20% total, not 40%+. That's because the base import tax (MFN rate) on this item code is 0%, and only a 7.5% tariff plus the 12.5% forced-labor-related tariff apply; the usual 25% \"legacy Section 301\" tariff generally doesn't hit this specific classification. So the duty argument here is real but more modest than luggage or appliances — lead with labor instead. Consumer electronics get returned constantly (wrong fit, buyer's remorse, minor cosmetic damage), and every return has to be opened, tested, cleaned, and either restocked or scrapped by a person. Doing that at US labor rates (about $25/hr) costs real money per unit; doing the same work at Tijuana labor rates (about $5/hr) saves roughly $0.33 for every minute of labor involved. Since this brand sits about 50 miles from our Tijuana site, we can pitch the labor savings on returns as the primary case, with the modest duty deferral as a bonus.",
+  levers:{Duty:"Medium–strong",Labor:"Strong (returns, refurb)",CrossBorder:"Medium"},
+  items:[["True wireless earbuds","$20–30","8518.30.20","Free","7.5% (4A)","12.5%","—","~20%"],
+   ["Over-ear or gaming headset","$40–100","8518.30","Free","7.5%","12.5%","—","~20%"],
+   ["Bluetooth speaker","$30–60","8518.22 / 8518.29","0–4.9%","7.5–25%","12.5%","—","20–42%"],
+   ["Power bank (if carried)","$25–50","8507.60","3.4%","25% (since Jan 2026)","12.5%","—","~41%"]],
+  math:[50,22,3,8],
+  mx:["Lithium batteries in equipment need a dangerous goods check for the border crossing.","Returns can be tested, cleaned, and regraded at Tijuana labor rates.","Retail and Amazon mix: split fast movers (US) from long tail and returns (Tijuana)."],
+  lookalikes:"Satechi (San Diego), Monoprice (SoCal, long-tail catalog), Wyze.",
+  angle:"Every returned pair of earbuds costs you minutes of US labor to grade. We do it for a fraction, 50 miles from your office."},
+ {id:"furn", name:"Home & garden furniture (parcel)", icon:"chair",
+  sample:"Christopher Knight Home", hq:"Online furniture retailer since November 2012, founded by furniture-industry veterans; actor Christopher Knight remains involved with the brand. Verify current HQ and ownership before outreach.",
+  sampleNote:"Ready-to-assemble and parcel-shipped indoor and outdoor furniture, sold heavily through Amazon, Wayfair, Home Depot, and Walmart marketplace listings.",
+  lineup:[["Ready-to-assemble accent chair","$150–300"],["Metal outdoor bistro chair","$100–250"],["Flat-pack side table","$80–200"],["Outdoor seating sets","$300+"]],
+  why:"Furniture stacks two separate tariffs on top of each other. The base import tax on furniture (MFN) is typically 0%, but the 25% \"legacy Section 301\" tariff applies to almost all Chinese-made wood and metal furniture anyway. Upholstered wood-frame seating — think accent chairs — gets hit with a second, additional 25% Section 232 tariff aimed at furniture containing steel components, pushing some pieces to around 50% total duty: half the chair's landed cost is tax. On top of that, furniture brands order by the full ocean container (there's a minimum order size dictated by container capacity, much bigger than a parcel shipment), and outdoor and seasonal lines only sell for part of the year. Between the container-sized orders and the seasonal selling window, this inventory routinely sits 4+ months before it moves. High duty plus a long holding period means a large share of the brand's cash is locked up in tax paid on furniture that's still sitting in a warehouse.",
+  levers:{Duty:"Very strong",Labor:"Medium (returns repack)",CrossBorder:"Low"},
+  items:[["Ready-to-assemble side table","$80–200","9403.60","0%","25%","12.5%","—","~37.5%"],
+   ["Upholstered wood-frame accent chair","$150–300","9401.61","0%","25%","— (232 applies)","25% (to 30% Jan 2027)","~50%"],
+   ["Metal outdoor chair","$100–250","9401.79","0%","25%","12.5%","Check steel derivative","~37.5%+"]],
+  math:[45,40,4,6],
+  mx:["Only parcel-sized SKUs for now, to stay within current scope.","Returns often need inspection and repackaging, a labor win.","Cube-heavy items cost more to move across the border; check cost per unit."],
+  lookalikes:"Nathan James, Burrow, Walker Edison.",
+  angle:"With 25% on top of 25% for upholstered pieces, you're prepaying half the product cost in duty on stock that sits for a season."},
+ {id:"led", name:"LED lighting", icon:"led",
+  sample:"Govee", hq:"China-founded smart-home lighting brand, large and Amazon-heavy; use as the pattern and target mid-size lookalikes.",
+  sampleNote:"LED strips, smart bulbs, and floor lamps make up most of the catalog, alongside newer TV-backlight and outdoor lines.",
+  lineup:[["RGBICW Smart Floor Lamp","$69.99"],["TV Backlight 3 Lite","$69.99"],["Permanent Outdoor Lights 2","$279.99"],["Permanent Outdoor Lights Pro","$759.99"]],
+  why:"LED lighting splits into two very different duty outcomes depending on the exact product, and that split is the whole opportunity here. A plain LED bulb currently appears to carry only about 14.5% total duty, because its classification code skips the 25% \"legacy Section 301\" tariff that hits most Chinese-made goods. But LED strips, light fixtures, and lamps are classified under a different code that does get that 25% tariff, pushing their total to roughly 37.5–41%. In practice, that means the pitch only works on the fixture-and-strip side of a catalog — a brand that's mostly selling plain bulbs is a weak target no matter how big it is. That's why checking the bulb-vs-fixture sales mix is the first thing to do before reaching out. Where the fixture side does apply, these are small, light parcels that are cheap to move across the border, but brands stock huge numbers of length and color variants, so plenty of individual SKUs still sit unsold for months even though each unit itself is inexpensive.",
+  levers:{Duty:"Strong (fixture-heavy)",Labor:"Low",CrossBorder:"Medium (Canada)"},
+  items:[["LED strip light kit","$20–60","9405.42 (or 8539.51)","3.9% (Free)","25%","12.5%","—","~37.5–41%"],
+   ["Smart LED bulb","$10–20","8539.52","2%","Appears none","12.5%","—","~14.5%"],
+   ["Floor or table lamp","$60–150","9405.11 / 9405.21","3.9–7.6%","25%","12.5%","—","~41–45%"]],
+  math:[50,38,4,7],
+  mx:["Small, light parcels: low cross-border cost per unit.","Long-tail variants (lengths, colors) create long stock cover."],
+  lookalikes:"Nanoleaf (Canada, US+Canada sales), Lumary, Hyperikon.",
+  angle:"Your fixtures and strips carry about 41% duty. Deferring it on four months of variants frees real cash."},
+ {id:"pet", name:"Pet hard goods & pet tech", icon:"fountain",
+  sample:"PETLIBRO", hq:"China-founded pet tech brand: smart, app-controlled feeders and fountains; Amazon-heavy with a growing DTC storefront.",
+  sampleNote:"Automatic feeders, water fountains, and replacement filters, most with RFID pet recognition and companion apps.",
+  lineup:[["Granary Smart Feeder (dual bowl)","$99.99"],["Granary Smart Camera Feeder","$139.99"],["Dockstream 2 Smart Fountain","$89.99"],["Stainless Steel Fountain","$39.99"]],
+  why:"Automatic feeders and water fountains are essentially electronics dressed up as pet gear, and they get taxed like electronics: roughly 40% total once the 25% \"legacy Section 301\" tariff and the 12.5% forced-labor-related tariff stack on top of a low base rate. What makes this category different from a typical electronics play is the recurring side of the business: these brands sell subscription refill packs — filters, cartridges — that have to be individually picked, packed, and kitted by hand every month. That's steady, repeatable labor demand rather than a one-off return job, which makes it a good fit for setting up an ongoing Tijuana kitting operation rather than pitching a single duty-deferral conversation. Stay disciplined about scope here: for now, focus on hard goods and consumables — pet food and bulky items like litter boxes are outside current scope (perishables and oversized items we're not prioritizing yet).",
+  levers:{Duty:"Strong",Labor:"Medium (subscriptions)",CrossBorder:"Low–medium"},
+  items:[["Automatic feeder","$50–120","8479.89 (verify)","~2.5%","25%","12.5%","—","~40%"],
+   ["Water fountain","$25–50","8413.70 / 8479.89","0–2.5%","25%","12.5%","—","~37.5–40%"],
+   ["Replacement filter packs","$10–20","8421.21 / 8421.99","~0%","25%","12.5%","—","~37.5%"]],
+  math:[45,39,3,8],
+  mx:["Hard goods only for now; no food or bulky litter.","Filter subscriptions add steady kitting labor.","Amazon-heavy: pitch the reserve model."],
+  lookalikes:"Petcube, Furbo, Wild One, Fable Pets.",
+  angle:"Every feeder in your warehouse carries about 40% prepaid duty, and your filter subscriptions need hands. We cut both."},
+ {id:"shoe", name:"Footwear (synthetic)", icon:"sneaker",
+  sample:"Vessi", hq:"Vancouver, BC — sells in the US and Canada; signature \"100% waterproof Dyma-tex knit\" upper, several styles machine washable. Confirm manufacturing origin before outreach.",
+  sampleNote:"Waterproof knit sneakers across men's and women's lines, full size runs in many colorways.",
+  lineup:[["Weekend Classic","$150"],["Match Sneaker","$160"],["Stormburst Low Top","$170"],["Stormburst High Top","$190"]],
+  why:"Footwear duty is more complicated than most categories because the rate depends heavily on the exact material and construction, but textile- and knit-upper sneakers like these typically land around 40% or higher once you stack the category's base import tax, a 7.5% tariff, and the 12.5% forced-labor-related tariff. Shoe brands also have to stock every size in every color before they know which combinations will actually sell, so a large share of inventory sits unsold for months — and footwear return rates are high to begin with, since fit is the number one reason people send shoes back. There's a second lever specific to this brand: it also sells into Canada, and stock warehoused in Tijuana that ships to a Canadian customer never has to clear US customs or pay US duty at all — a separate savings on top of the deferral play. Two things to verify before pitching: footwear needs its own IMMEX sector permit that we don't yet have, and if the shoes are actually made in Vietnam rather than China, this entire duty stack doesn't apply and the numbers need to be recalculated from scratch.",
+  levers:{Duty:"Very strong",Labor:"Medium (returns)",CrossBorder:"Strong (Canada)"},
+  items:[["Waterproof knit sneaker","$135–165","6404.19 (verify)","~20–37.5%","7.5%","12.5%","—","~40–57.5%"],
+   ["Kids' or slip-on style","$90–130","6404.19","~20%","7.5%","12.5%","—","~40%"],
+   ["Socks and accessories","$15–30","6115","~14.6%","7.5%","12.5%","—","~35%"]],
+  math:[30,45,5,8],
+  mx:["Canada-bound stock can ship from Tijuana without ever paying US duty.","Footwear needs an IMMEX sector permit check before outreach.","If made in Vietnam, legacy 301 does not apply; recalculate."],
+  lookalikes:"Kizik, Xero Shoes, Atoms, Allbirds (check wool and leather).",
+  angle:"You hold every size in every color for months, and prepay about 40% duty on all of it. Your Canadian orders never need to pay US duty at all."},
+ {id:"fit", name:"Fitness equipment (hard goods)", icon:"weight",
+  sample:"Bala", hq:"Los Angeles, CA — design-led fitness accessories brand, known for the Bala Bangle wearable weight; frequent retailer and lifestyle-brand collaborations.",
+  sampleNote:"Wearable weights lead the catalog, alongside mats, props, and light apparel sold direct and through Target, Dick's, and boutique fitness retailers.",
+  lineup:[["Bala Bangles, 1 lb","$55"],["Bala Bangles, 2 lb","$65–69"],["Bala Bangles, 3 lb","$79"],["The Bala Bar / Ab Roller","varies"]],
+  why:"Sports equipment carries a moderate duty stack — about 42% once the 25% \"legacy Section 301\" tariff and 12.5% forced-labor-related tariff are added to a small 4.6% base rate. That sounds strong on paper, but this is actually one of the weaker cases in the whole set, and BDMs should treat it as a supporting argument rather than a lead one. The reason: the \"months unlocked\" math divides by the brand's net margin, and premium, design-led brands like this one earn much higher margins than a typical Amazon commodity seller — the same dollar amount of duty represents a much smaller slice of a high-margin brand's profit, so the payoff looks less dramatic. It still works, but expect a shorter, more skeptical conversation than with appliances or luggage. Keep the pitch to lightweight accessories — bangles, bars, mats — since anything heavy (full dumbbell sets, benches) eats up the savings in cross-border transport cost per unit.",
+  levers:{Duty:"Medium–strong",Labor:"Low",CrossBorder:"Low–medium"},
+  items:[["Wrist and ankle weights","$50–60","9506.91","4.6%","25%","12.5%","Check steel content","~42%"],
+   ["Weighted bar or ring","$50–100","9506.91","4.6%","25%","12.5%","Check steel content","~42%"],
+   ["Yoga or exercise mat","$60–100","9506.91 (or 3918)","4.6%","25%","12.5%","—","~42%"]],
+  math:[35,42,3,8],
+  mx:["Weight drives cross-border cost; keep to accessories, not dumbbell sets.","LA HQ is close to Tijuana."],
+  lookalikes:"TRX, Gaiam, Yes4All (heavy items: check transport cost).",
+  angle:"About 42% duty on every accessory, paid on arrival. We defer it until a customer buys."}
+];
+
+function months(c,d,s,m){return (c/100)*(d/100)*s/(m/100)}
+
+let activeId=ARCH[0].id, query="";
+const list=document.getElementById("list"), panel=document.getElementById("panel"),
+  countEl=document.getElementById("count"), q=document.getElementById("q");
+
+q.addEventListener("input",()=>{query=q.value.trim().toLowerCase();renderList();});
+
+function filtered(){
+  return ARCH.filter(a=>{
+    if(query){
+      const hay=[a.name,a.sample,a.sampleNote,a.lookalikes,...a.items.map(i=>i.join(" ")),...a.lineup.map(i=>i.join(" "))].join(" ").toLowerCase();
+      if(!hay.includes(query)) return false;
+    }
+    return true;
+  });
+}
+
+function renderList(){
+  const items=filtered();
+  countEl.textContent = items.length+" of "+ARCH.length+" archetypes";
+  list.innerHTML="";
+  if(!items.find(a=>a.id===activeId) && items.length) activeId=items[0].id;
+  items.sort((a,b)=>months(...b.math)-months(...a.math)).forEach(a=>{
+    const b=document.createElement("button");
+    b.className="item"; b.type="button"; b.role="tab";
+    b.setAttribute("aria-current", a.id===activeId ? "true":"false");
+    b.innerHTML=`<span class="ic">${icon(a.icon)}</span>
+      <span class="txt"><span class="nm">${a.name}</span><span class="sample">Sample: ${a.sample}</span></span>
+      <span class="mo">${months(...a.math).toFixed(1)}mo</span>`;
+    b.onclick=()=>{activeId=a.id; renderList(); renderPanel();};
+    list.appendChild(b);
+  });
+  if(!items.length){
+    list.innerHTML='<p style="color:var(--muted);font-size:13.5px;padding:12px 6px">No archetypes match. Clear the search term.</p>';
+  }
+}
+
+function renderPanel(){
+  const a=ARCH.find(x=>x.id===activeId);
+  if(!a){ panel.innerHTML=""; return; }
+  const v=months(...a.math);
+  panel.innerHTML=`
+   <div class="head">
+     <div class="htitle"><span class="hic">${icon(a.icon)}</span><h2>${a.name}</h2></div>
+     <div class="stat"><div class="v">${v.toFixed(1)}</div><div class="l">months of profit unlocked (est.)</div></div>
+   </div>
+   <div class="formula">${a.math[0]}% COGS &times; ${a.math[1]}% duty &times; ${a.math[2]} months stock cover &divide; ${a.math[3]}% net margin</div>
+   <div class="levers">${Object.entries(a.levers).map(([k,x])=>`<span class="lever">${k==="CrossBorder"?"Cross-border":k}: <b>${x}</b></span>`).join("")}</div>
+
+   <details class="glossary">
+     <summary>New to this? What these terms mean</summary>
+     <ul class="plain">
+       <li><b>COGS</b> — what it costs the brand to actually make one unit (materials, manufacturing), before duty or shipping.</li>
+       <li><b>Duty</b> — the import tax US Customs charges when a shipment crosses the border. For Chinese-made goods this is usually several tariffs stacked together: the country's normal base rate, plus a 25% "legacy Section 301" tariff that applies to most Chinese goods, plus a 12.5% forced-labor-related tariff, and sometimes a Section 232 tariff on steel or wood content on top of that.</li>
+       <li><b>Stock cover</b> — how many months of inventory the brand typically holds before it sells. Seasonal goods, ocean-container minimum orders, and wide size/color catalogs all push this number up.</li>
+       <li><b>Net margin</b> — what's left as profit after every cost, including duty. A lower margin means the same duty bill represents a bigger bite out of profit.</li>
+       <li><b>Months of profit unlocked</b> — our estimate of how many months' worth of the brand's own profit is currently sitting locked up as duty paid on inventory that hasn't sold yet. The formula is COGS % × duty % × months of stock cover ÷ net margin %. The bigger the number, the stronger the case that deferring duty in Tijuana (instead of paying it the moment the container lands in the US) frees up real, usable cash.</li>
+     </ul>
+   </details>
+
+   <section class="blk"><h3>Why it works</h3><p class="prose">${a.why}</p></section>
+
+   <section class="blk"><h3>Sample brand</h3>
+     <div class="brandcard">
+       <div class="bhead"><span class="bic">${icon(a.icon)}</span><div><div class="bname">${a.sample}</div><div class="bhq">${a.hq}</div></div></div>
+       <p class="prose" style="margin-bottom:6px">${a.sampleNote}</p>
+       <div class="lineup">${a.lineup.map(([n,p])=>`<div class="sku"><div class="sic">${icon(a.icon)}</div><div class="sname">${n}</div><div class="sprice">${p}</div></div>`).join("")}</div>
+       <p class="imgnote">Flagship names and current list prices, pulled from the brand's own site this September. No product photography here — this workspace can't pull real images from outside sites, so treat the icon above as a category marker, not the actual product.</p>
+     </div>
+   </section>
+
+   <section class="blk"><h3>Duty math by item</h3>
+     <div class="tbl"><table><thead><tr><th>Item</th><th>Retail</th><th>Likely HTS</th><th>MFN</th><th>Legacy 301</th><th>New 301</th><th>Section 232</th><th class="num">Total (CN)</th></tr></thead>
+     <tbody>${a.items.map(r=>`<tr>${r.map((c,i)=>i===7?`<td class="total">${c}</td>`:`<td${i===1||i===3||i===4||i===5?' class="num"':''}>${c}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+     <p style="font-size:12.5px;color:var(--muted);margin-top:8px">HTS codes are likely classifications for planning; confirm with our broker before quoting a prospect.</p>
+   </section>
+
+   <section class="blk"><h3>How it fits our Tijuana operation</h3><ul class="plain">${a.mx.map(x=>`<li>${x}</li>`).join("")}</ul></section>
+
+   <section class="blk"><h3>Lookalikes to build the batch</h3><p class="prose">${a.lookalikes}</p></section>
+
+   <section class="blk"><h3>Opening angle</h3>
+     <div class="anglebox"><p id="angleTxt">${a.angle}</p><button class="copybtn" id="copyBtn" type="button">Copy</button></div>
+   </section>
+
+   <footer class="note">Duty rates, COGS, margin, and labor figures are planning assumptions, not verified data. Product names and prices are current list prices from the brand's own site, subject to change. Confirm every prospect's HTS codes and rates with our customs broker or trade counsel before use in a proposal. Company and customer information here is confidential — keep it internal.</footer>
+  `;
+  const copyBtn=document.getElementById("copyBtn");
+  copyBtn.onclick=()=>{
+    const text=document.getElementById("angleTxt").textContent;
+    const done=()=>{copyBtn.textContent="Copied";copyBtn.classList.add("done");setTimeout(()=>{copyBtn.textContent="Copy";copyBtn.classList.remove("done")},1400)};
+    try{ navigator.clipboard.writeText(text).then(done).catch(()=>{selectText()}); }catch(e){ selectText(); }
+    function selectText(){ const r=document.createRange(); r.selectNodeContents(document.getElementById("angleTxt")); const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(r); }
+  };
+}
+
+renderList();
+renderPanel();
+
+// theme toggle
+const root=document.documentElement, tb=document.getElementById("themeBtn");
+function isDark(){const t=root.getAttribute("data-theme"); return t? t==="dark": true;}
+function labelBtn(){tb.textContent = isDark() ? "Light mode" : "Dark mode";}
+tb.onclick=()=>{ root.setAttribute("data-theme", isDark() ? "light":"dark"); try{localStorage.setItem("arch-theme", root.getAttribute("data-theme"));}catch(e){} labelBtn(); };
+try{ const s=localStorage.getItem("arch-theme"); if(s) root.setAttribute("data-theme",s); }catch(e){}
+labelBtn();
+</script>
+</body>
+</html>
